@@ -43,7 +43,7 @@ long_study |>
   facet_grid(~arm)
 ```
 
-
+The values of the subjects in the experimental group increase from week 1 to week 8. The values for the control group does not change much.
 
 
 
