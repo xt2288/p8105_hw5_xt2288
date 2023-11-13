@@ -137,6 +137,73 @@ effect_size_power |>
        y = "Power")
 ```
 
-As the effective size increases, the power increases.
+As the effect size increases, the power increases.
+
+```{r}
+ave_est_0 = mean(sim_results_0$estimate)
+ave_est_1 = mean(sim_results_1$estimate)
+ave_est_2 = mean(sim_results_2$estimate)
+ave_est_3 = mean(sim_results_3$estimate)
+ave_est_4 = mean(sim_results_4$estimate)
+ave_est_5 = mean(sim_results_5$estimate)
+ave_est_6 = mean(sim_results_6$estimate)
+
+ave_est_true = 
+  data.frame(ave_est = c(ave_est_0,ave_est_1,ave_est_2,ave_est_3,ave_est_4,ave_est_5,ave_est_6),
+             true_mu = c(0,1,2,3,4,5,6))
+
+ave_est_true |>
+  ggplot(aes(x = true_mu, y = ave_est)) +
+  geom_point(color = "red") +
+  geom_line(color = "red") +
+  labs(title = "Average Estimate vs. True Mean",
+       x = "True Mean",
+       y = "Average Estimate") 
+
+```
+
+```{r}
+ave_est_rej_0 = sim_results_0 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_1 = sim_results_1 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_2 = sim_results_2 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_3 = sim_results_3 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_4 = sim_results_4 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_5 = sim_results_5 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_6 = sim_results_6 |>
+  filter(p.value < 0.05)
+
+ave_est_rej_true = 
+  data.frame(ave_est_rej = c(mean(ave_est_rej_0$estimate),
+                         mean(ave_est_rej_1$estimate),
+                         mean(ave_est_rej_2$estimate),
+                         mean(ave_est_rej_3$estimate),
+                         mean(ave_est_rej_4$estimate),
+                         mean(ave_est_rej_5$estimate),
+                         mean(ave_est_rej_6$estimate)),
+             true_mu = c(0,1,2,3,4,5,6))
+
+ggplot() +
+  geom_point(data = ave_est_true, aes(x = true_mu, y = ave_est), color = "red") +
+  geom_line(data = ave_est_true, aes(x = true_mu, y = ave_est), color = "red") +
+  geom_point(data = ave_est_rej_true, aes(x = true_mu, y = ave_est_rej), color = "blue") +
+  geom_line(data = ave_est_rej_true, aes(x = true_mu, y = ave_est_rej), color = "blue") +
+  labs(title = "Average Estimate vs. True Mean",
+       x = "True Mean",
+       y = "Average Estimate") 
+```
+
+The red line is average estimate vs. true mean. The average estimate is very close to the true mean. The blue line is average estimate in which the null was rejected vs true mean. The sample average for rejected null is not approximately equal to the true value of mean when mean is 0, 1,2,3, and 4. It is because the power is not great enough. As the power increases, or the effect size increases, the sample average estimate is very close to the mean. 
 
 
