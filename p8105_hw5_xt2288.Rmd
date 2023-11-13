@@ -12,6 +12,26 @@ set.seed(1)
 
 # Problem 1
 
+```{r}
+homicide_data_raw = read_csv("data/homicide-data.csv")
+```
+
+The raw data consist `r ncol(homicide_data)` variables and `r nrow(homicide_data)` observations. Each observation includes uid, reported date, victim first and last name, race, age, sex, city, state, lat, lon, and disposition.
+
+```{r}
+homicide_data = 
+homicide_data_raw |>
+  mutate(city_state = paste(city, state, sep=", "),
+         disposition = case_match(
+           disposition,
+           "Closed by arrest" ~ "homicides",
+           "Closed without arrest" ~ "unsolved homicides",
+           "Open/No arrest" ~ "unsolved homicides"
+         )) |>
+  group_by(city_state, disposition) |>
+  summarize(n = n())
+```
+
 
 # Problem 2
 
