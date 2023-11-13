@@ -138,3 +138,5 @@ effect_size_power |>
 ```
 
 As the effective size increases, the power increases.
+
+
