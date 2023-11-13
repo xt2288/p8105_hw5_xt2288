@@ -32,6 +32,48 @@ homicide_data_raw |>
   summarize(n = n())
 ```
 
+```{r}
+# prop.test
+homicide_data_Bal = homicide_data |>
+  pivot_wider(
+    names_from = "disposition", 
+    values_from = "n") |>
+  filter(city_state == "Baltimore, MD")
+
+prop_test_Bal = 
+  prop.test(pull(homicide_data_Bal, `unsolved homicides`), 
+            pull(homicide_data_Bal, homicides) + pull(homicide_data_Bal,`unsolved homicides`))
+
+prop_test_Bal |>
+  broom::tidy() |>
+  select(estimate, conf.low, conf.high)
+```
+
+```{r}
+# prop.test for each city
+homicide_data_prop = homicide_data |>
+  pivot_wider(
+    names_from = "disposition", 
+    values_from = "n")
+
+prop_test_city_state = function(a) {
+    x = homicide_data_prop |>
+      filter(city_state == a)
+    
+    test = prop.test(pull(x, `unsolved homicides`),
+                     pull(x, homicides) + pull(x,`unsolved homicides`))
+    test_result = test |>
+      broom::tidy() |>
+      select(estimate, conf.low, conf.high)
+    
+    test_result
+}
+
+test_res  = 
+  data.frame(city_state = unique(pull(homicide_data_prop, city_state))) |>
+  mutate(prop_test_res = purrr::map(city_state,prop_test_city_state))
+```
+
 
 # Problem 2
 
