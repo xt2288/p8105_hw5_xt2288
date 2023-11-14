@@ -120,7 +120,7 @@ long_study =
   mutate(week = str_replace_all(week, "week_", ""))
 
 long_study |>
-  ggplot(aes(x = week, y = data, group = subject_id, color = subject_id)) + 
+  ggplot(aes(x = week, y = data, group = subject_id, color = arm)) + 
   geom_line() +
   facet_grid(~arm)
 ```
