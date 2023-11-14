@@ -116,7 +116,8 @@ long_study =
     week_1:week_8,
     names_to = "week", 
     values_to = "data"
-  )
+  ) |>
+  mutate(week = str_replace_all(week, "week_", ""))
 
 long_study |>
   ggplot(aes(x = week, y = data, group = subject_id, color = subject_id)) + 
