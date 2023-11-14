@@ -16,7 +16,7 @@ set.seed(1)
 homicide_data_raw = read_csv("data/homicide-data.csv")
 ```
 
-The raw data consist `r ncol(homicide_data)` variables and `r nrow(homicide_data)` observations. Each observation includes uid, reported date, victim first and last name, race, age, sex, city, state, lat, lon, and disposition.
+The raw data consist `r ncol(homicide_data_raw)` variables and `r nrow(homicide_data_raw)` observations. Each observation includes uid, reported date, victim first and last name, race, age, sex, city, state, lat, lon, and disposition.
 
 ```{r}
 homicide_data = 
@@ -29,8 +29,11 @@ homicide_data_raw |>
            "Open/No arrest" ~ "unsolved homicides"
          )) |>
   group_by(city_state, disposition) |>
-  summarize(n = n())
+  summarize(n = n()) |>
+  filter(city_state != "Tulsa, AL") 
 ```
+
+Tulsa, AL in city_state is removed, as it is not a major US city.
 
 ```{r}
 # prop.test
@@ -54,7 +57,8 @@ prop_test_Bal |>
 homicide_data_prop = homicide_data |>
   pivot_wider(
     names_from = "disposition", 
-    values_from = "n")
+    values_from = "n") |>
+    filter(city_state != "Tulsa, AL") 
 
 prop_test_city_state = function(a) {
     x = homicide_data_prop |>
@@ -71,8 +75,22 @@ prop_test_city_state = function(a) {
 
 test_res  = 
   data.frame(city_state = unique(pull(homicide_data_prop, city_state))) |>
-  mutate(prop_test_res = purrr::map(city_state,prop_test_city_state))
+  mutate(prop_test_res = purrr::map(city_state,prop_test_city_state)) |>
+  unnest(cols = c(prop_test_res))
 ```
+
+plot of the estimates and CIs for each city
+
+```{r}
+test_res |>
+  mutate(city_state = fct_reorder(city_state, estimate)) |>
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+The plot arrange the estimate of the proportion of unsolved homicides in city,state. Chicago has the highest estimate and small range of confidence interval.
 
 
 # Problem 2
